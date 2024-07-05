@@ -1,0 +1,13 @@
+/venv
+/.idea
+
+/sessions/*
+!/sessions/example.session
+
+/configs/*
+!/configs/example.json
+
+/databases/*
+!/databases/example.db
+
+*.log

@@ -1,0 +1,13 @@
+{
+    "session": "example",
+    "proxy": {
+        "scheme": "socks5",
+        "hostname": "93.190.141.213",
+        "port": 16615,
+        "username": "n228k1o0vg",
+        "password": "EeDbmAylIuYTqt2H"
+    },
+    "db": "example",
+    "to_chat": "example_chat_link",
+    "created_at": "2024-07-05 21:29:02"
+}
