@@ -1,0 +1,6 @@
+[Telegram]
+api_id = Telegram-API-ID
+api_hash = Telegram-API-Hash
+
+[Inviter]
+members_count = Members-To-Invite-Count
