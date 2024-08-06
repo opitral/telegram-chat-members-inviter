@@ -9,8 +9,7 @@ import logging
 import sqlite3
 
 from pyrogram import Client
-from pyrogram.errors import FloodWait, PeerFlood, UserAlreadyParticipant
-
+from pyrogram.errors import FloodWait, PeerFlood, UserAlreadyParticipant, UserDeactivated, UserDeactivatedBan
 from typing import List, Dict
 
 from pyrogram.types import Chat
@@ -64,10 +63,21 @@ def get_account_configs() -> List[Dict]:
         return configs
 
 
-async def has_spam_block(bot: Client, account_config) -> bool:
-    try:
-        session_name = account_config["session"]
+def block_account(session_name):
+    config_path = os.path.join(os.getcwd(), "configs", f"{session_name}.json")
 
+    with open(config_path, "r+") as f:
+        account_config = f.read()
+        account_config = json.loads(account_config)
+        account_config["blocked"] = True
+
+        f.seek(0)
+        f.write(json.dumps(account_config, indent=4))
+        f.truncate()
+
+
+async def has_spam_block(bot: Client, session_name) -> bool:
+    try:
         await bot.send_message("SpamBot", "/start")
         await asyncio.sleep(2)
 
@@ -78,11 +88,7 @@ async def has_spam_block(bot: Client, account_config) -> bool:
                 return True
 
             elif "Ваш аккаунт ограничен" in message.text:
-                account_config["blocked"] = True
-                config_path = os.path.join(os.getcwd(), "configs", f"{session_name}.json")
-                with open(config_path, "w") as f:
-                    f.write(json.dumps(account_config))
-
+                block_account(session_name)
                 logger.error(f"Account \"{session_name}\" is permanently limited (SpamBot)")
                 return True
 
@@ -134,11 +140,16 @@ async def main():
                 await bot.start()
                 logger.info(f"Connected to session: {session_name}")
 
+            except (UserDeactivated, UserDeactivatedBan):
+                logger.error(f"Account \"{session_name}\" was has been deleted/deactivated")
+                block_account(session_name)
+                continue
+
             except Exception as ex:
                 logger.error(f"Error while connecting to session \"{session_name}\", details: {ex}")
                 continue
 
-            if await has_spam_block(bot, account_config):
+            if await has_spam_block(bot, session_name):
                 continue
 
             try:
@@ -196,7 +207,11 @@ async def main():
             logger.error(f"({session_name})  {ex}")
 
         finally:
-            await bot.stop()
+            try:
+                await bot.stop()
+
+            except Exception as ex:
+                logger.error(f"({session_name})  {ex}")
 
 
 if __name__ == "__main__":
