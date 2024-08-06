@@ -1,6 +1,8 @@
 [Telegram]
-api_id = Telegram-API-ID
-api_hash = Telegram-API-Hash
+API_ID = Telegram-API-ID
+API_HASH = Telegram-API-Hash
 
 [Inviter]
-members_count = Members-To-Invite-Count
+MEMBERS_COUNT = 20
+MIN_INVITE_DELAY=3
+MAX_INVITE_DELAY=25

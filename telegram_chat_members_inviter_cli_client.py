@@ -33,9 +33,11 @@ logger.addHandler(file_handler)
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-api_id = config["Telegram"]["api_id"]
-api_hash = config["Telegram"]["api_hash"]
-members_count = int(config["Inviter"]["members_count"])
+API_ID = config["Telegram"]["API_ID"]
+API_HASH = config["Telegram"]["API_HASH"]
+MEMBERS_COUNT = int(config["Inviter"]["MEMBERS_COUNT"])
+MIN_INVITE_DELAY = int(config["Inviter"]["MIN_INVITE_DELAY"])
+MAX_INVITE_DELAY = int(config["Inviter"]["MAX_INVITE_DELAY"])
 
 
 def get_account_configs() -> List[Dict]:
@@ -136,12 +138,12 @@ async def main():
 
         try:
             try:
-                bot = Client(session_path, proxy=session_proxy, lang_code="ru", api_id=api_id, api_hash=api_hash)
+                bot = Client(session_path, proxy=session_proxy, lang_code="ru", api_id=API_ID, api_hash=API_HASH)
                 await bot.start()
                 logger.info(f"Connected to session: {session_name}")
 
             except (UserDeactivated, UserDeactivatedBan):
-                logger.error(f"Account \"{session_name}\" was has been deleted/deactivated")
+                logger.error(f"Account \"{session_name}\" has been deleted/deactivated")
                 block_account(session_name)
                 continue
 
@@ -162,7 +164,7 @@ async def main():
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
-            cursor.execute("SELECT * FROM members WHERE status = 'free' ORDER BY RANDOM() LIMIT ?", (members_count,))
+            cursor.execute("SELECT * FROM members WHERE status = 'free' ORDER BY RANDOM() LIMIT ?", (MEMBERS_COUNT,))
             leads = cursor.fetchall()
             members = []
 
@@ -175,9 +177,9 @@ async def main():
 
                     await bot.add_contact(username, first_name, last_name)
                     members.append(telegram_id)
-                    logger.info(f"Member: {len(members)}/{members_count}")
+                    logger.info(f"Member: {len(members)}/{MEMBERS_COUNT}")
 
-                    await asyncio.sleep(random.randint(3, 8))
+                    await asyncio.sleep(random.randint(MIN_INVITE_DELAY, MAX_INVITE_DELAY))
 
                 except FloodWait as ex:
                     logger.info(f"Flood wait: {ex.value} seconds")
