@@ -130,6 +130,8 @@ async def main():
         session_path = os.path.join(os.getcwd(), "sessions", session_name)
         os.makedirs(os.path.dirname(session_path), exist_ok=True)
 
+        logger.info(f"Session name: {session_name}")
+
         db_path = os.path.join(os.getcwd(), "databases", f"{account_config['db']}.db")
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
