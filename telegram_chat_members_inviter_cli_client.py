@@ -35,7 +35,8 @@ config.read("config.ini")
 
 API_ID = config["Telegram"]["API_ID"]
 API_HASH = config["Telegram"]["API_HASH"]
-MEMBERS_COUNT = int(config["Inviter"]["MEMBERS_COUNT"])
+MIN_MEMBERS_COUNT = int(config["Inviter"]["MIN_MEMBERS_COUNT"])
+MAX_MEMBERS_COUNT = int(config["Inviter"]["MAX_MEMBERS_COUNT"])
 MIN_INVITE_DELAY = int(config["Inviter"]["MIN_INVITE_DELAY"])
 MAX_INVITE_DELAY = int(config["Inviter"]["MAX_INVITE_DELAY"])
 
@@ -125,6 +126,7 @@ async def main():
         if account_config["blocked"]:
             continue
 
+        MEMBERS_COUNT = random.randint(MIN_MEMBERS_COUNT, MAX_MEMBERS_COUNT + 1)
         bot = None
         session_name = account_config["session"]
         session_path = os.path.join(os.getcwd(), "sessions", session_name)
