@@ -9,7 +9,8 @@ import logging
 import sqlite3
 
 from pyrogram import Client
-from pyrogram.errors import FloodWait, PeerFlood, UserAlreadyParticipant, UserDeactivated, UserDeactivatedBan
+from pyrogram.errors import (FloodWait, PeerFlood, UserAlreadyParticipant, UserDeactivated, UserDeactivatedBan,
+                             AuthKeyUnregistered)
 from typing import List, Dict
 
 from pyrogram.types import Chat
@@ -149,6 +150,11 @@ async def main():
 
             except (UserDeactivated, UserDeactivatedBan):
                 logger.error(f"Account \"{session_name}\" has been deleted/deactivated")
+                block_account(session_name)
+                continue
+
+            except AuthKeyUnregistered:
+                logger.error(f"Account \"{session_name}\" has been unregistered")
                 block_account(session_name)
                 continue
 
