@@ -86,8 +86,8 @@ async def has_spam_block(bot: Client, session_name) -> bool:
 
         async for message in bot.get_chat_history("SpamBot", limit=1):
             if "Ваш аккаунт временно ограничен" in message.text:
-                logger.warning(f"Account \"{session_name}\" is temporarily limited until " + str(re.findall(r'(?<=сняты ).+(?= \(по)',
-                                                                                        message.text)[0]) + "(SpamBot)")
+                logger.warning(f"Account \"{session_name}\" is temporarily limited until " +
+                               str(re.findall(r'(?<=сняты ).+(?= \(по)', message.text)[0]) + "(SpamBot)")
                 return True
 
             elif "Ваш аккаунт ограничен" in message.text:
@@ -132,7 +132,7 @@ async def main():
         session_path = os.path.join(os.getcwd(), "sessions", session_name)
         os.makedirs(os.path.dirname(session_path), exist_ok=True)
 
-        logger.info(f"Session name: {session_name}")
+        logger.warning(f"Start session: {session_name}")
 
         db_path = os.path.join(os.getcwd(), "databases", f"{account_config['db']}.db")
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -216,6 +216,7 @@ async def main():
         finally:
             try:
                 await bot.stop()
+                logger.warning(f"Stop session: {session_name}")
 
             except Exception as ex:
                 logger.error(f"({session_name})  {ex}")
