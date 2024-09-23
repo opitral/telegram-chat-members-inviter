@@ -143,8 +143,13 @@ async def main():
 
         try:
             try:
-                bot = Client(session_path, ipv6=True, proxy=session_proxy, lang_code="ru",
-                             api_id=API_ID, api_hash=API_HASH)
+                if session_proxy:
+                    bot = Client(session_path, ipv6=True, proxy=session_proxy, lang_code="ru",
+                                 api_id=API_ID, api_hash=API_HASH)
+
+                else:
+                    bot = Client(session_path, lang_code="ru", api_id=API_ID, api_hash=API_HASH)
+
                 await bot.start()
                 logger.info(f"Connected to session: {session_name}")
 
